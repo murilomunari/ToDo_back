@@ -1,9 +1,12 @@
 package com.ToDo.Service;
 
 import com.ToDo.DTO.TaskCreateRequest;
+import com.ToDo.Model.Enum.TaskStatus;
 import com.ToDo.Model.Task;
 import com.ToDo.Repository.TaskRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TaskService {
@@ -14,34 +17,29 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public Task create (TaskCreateRequest data) {
+    public Task create(TaskCreateRequest data) {
 
         if (taskRepository.existsByTitle(data.title())) {
-            throw new RuntimeException("Task ja cadestrada!");
-        }
-
-        if (data.title() != null && data.title().length() > 100) {
-            throw new RuntimeException("Titulo esta muito grande!");
+            throw new RuntimeException("Task já cadastrada!");
         }
 
         Task task = Task.builder()
                 .title(data.title())
                 .category(data.category())
                 .description(data.description())
+                .priority(data.priority())
+                .status(TaskStatus.PENDING)
                 .build();
-
-        String category = (data.category() == null || data.category().isBlank())
-                ? "GENERAL"
-                : data.category();
-        task.setCategory(category);
-
-
-        if (data.priority() == null) {
-            throw new RuntimeException("Prioridade é obrigatória");
-        }
-        task.setPriority(data.priority());
-
 
         return taskRepository.save(task);
     }
+
+    public List<Task> findAll() {
+        return taskRepository.findAll();
+    }
+
+    public List<Task> findByTitle (String title) {
+        return taskRepository.findByTitleContainingIgnoreCase(title);
+    }
+
 }

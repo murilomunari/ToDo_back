@@ -7,11 +7,13 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Tasks")
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "tasks")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,7 +28,6 @@ public class Task {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @NotBlank
     @Column(nullable = false, length = 50)
     private String category;
 
@@ -35,17 +36,16 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskStatus status;
+    private TaskStatus status = TaskStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskPriority priority;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dateCreation;
 
-    @LastModifiedDate
+    // Data REAL de conclusão da tarefa (regra de negócio)
     private LocalDateTime dateCompletion;
-
 }
