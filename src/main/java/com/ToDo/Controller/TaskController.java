@@ -1,6 +1,7 @@
 package com.ToDo.Controller;
 
 import com.ToDo.DTO.TaskCreateRequest;
+import com.ToDo.Model.Enum.TaskStatus;
 import com.ToDo.Model.Task;
 import com.ToDo.Service.TaskService;
 import jakarta.validation.Valid;
@@ -36,6 +37,11 @@ public class TaskController {
         return taskService.findByTitle(title)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("{id}/status")
+    public ResponseEntity<Task> updateStatus(@PathVariable String id, @RequestParam TaskStatus status) {
+            return ResponseEntity.ok(taskService.updateTask(id, status));
     }
 
     @DeleteMapping("{title}")
