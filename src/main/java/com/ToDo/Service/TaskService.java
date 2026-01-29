@@ -44,21 +44,23 @@ public class TaskService {
         return taskRepository.findByTitleContainingIgnoreCase(title);
     }
 
-    public Task updateTask (String id, TaskStatus newStatus) {
+    public Task updateTask(String id, TaskStatus newStatus) {
         Task task = taskRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Task não encontrada!"));
+                .orElseThrow(() -> new RuntimeException("Task não encontrada!"));
 
         TaskStatus currentStatus = task.getStatus();
 
-        if (currentStatus == TaskStatus.COMPLETED){
-            throw new RuntimeException("Essa tarefa ja foi finalizada!");
+        if (currentStatus == TaskStatus.COMPLETED) {
+            throw new RuntimeException("Essa tarefa já foi finalizada!");
         }
 
         if (currentStatus == TaskStatus.PENDING && newStatus == TaskStatus.COMPLETED) {
-            throw new RuntimeException("Coloque a tarefa em progresso!");
+            throw new RuntimeException("Coloque a tarefa em progresso antes!");
         }
 
-        if (currentStatus == TaskStatus.IN_PROGRESS && newStatus == TaskStatus.COMPLETED){
+        task.setStatus(newStatus);
+
+        if (newStatus == TaskStatus.COMPLETED) {
             task.setDateCompletion(LocalDateTime.now());
         } else {
             task.setDateCompletion(null);
@@ -66,6 +68,7 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
+
 
     public void deleteByTitle(String title) {
         Task task = taskRepository.findByTitleContainingIgnoreCase(title)
