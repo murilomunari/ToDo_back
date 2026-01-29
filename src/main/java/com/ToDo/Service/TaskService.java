@@ -15,6 +15,33 @@ public class TaskService {
     }
 
     public Task create (TaskCreateRequest data) {
-        return null;
+
+        if (taskRepository.existsByTitle(data.title())) {
+            throw new RuntimeException("Task ja cadestrada!");
+        }
+
+        if (data.title() != null && data.title().length() > 100) {
+            throw new RuntimeException("Titulo esta muito grande!");
+        }
+
+        Task task = Task.builder()
+                .title(data.title())
+                .category(data.category())
+                .description(data.description())
+                .build();
+
+        String category = (data.category() == null || data.category().isBlank())
+                ? "GENERAL"
+                : data.category();
+        task.setCategory(category);
+
+
+        if (data.priority() == null) {
+            throw new RuntimeException("Prioridade é obrigatória");
+        }
+        task.setPriority(data.priority());
+
+
+        return taskRepository.save(task);
     }
 }
