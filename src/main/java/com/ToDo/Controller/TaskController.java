@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("Task")
@@ -31,7 +32,15 @@ public class TaskController {
     }
 
     @GetMapping("{title}")
-    public ResponseEntity<List<Task>> findByTitle(@RequestParam String title) {
-        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByTitle(title));
+    public ResponseEntity<Task> findByTitle(@RequestParam String title) {
+        return taskService.findByTitle(title)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("{title}")
+    public ResponseEntity<Void> deleteByTitle (@RequestParam String title) {
+        taskService.deleteByTitle(title);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 }

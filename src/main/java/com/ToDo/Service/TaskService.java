@@ -7,6 +7,7 @@ import com.ToDo.Repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -38,8 +39,15 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public List<Task> findByTitle (String title) {
+    public Optional<Task> findByTitle (String title) {
         return taskRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public void deleteByTitle(String title) {
+        Task task = taskRepository.findByTitleContainingIgnoreCase(title)
+                .orElseThrow(() -> new RuntimeException("Task não encontrada"));
+
+        taskRepository.delete(task);
     }
 
 }
